@@ -71,13 +71,17 @@ RAG = _RAGSettings()
 # ══════════════════════════════════════════════════════════════════════════════
 @dataclass(frozen=True)
 class _GradingSettings:
-    models: tuple = field(default_factory=lambda: (os.getenv("GROQ_MODEL", "llama3-8b-8192"),))
-    max_tokens:          int   = 1500
-    temperature:         float = 0.15
+    models: tuple = field(default_factory=lambda: tuple(filter(None, [
+        os.getenv("GROQ_MODEL",      "meta-llama/llama-4-scout-17b-16e-instruct"),
+        os.getenv("GROQ_FALLBACK_1", "llama-3.3-70b-versatile"),
+        os.getenv("GROQ_FALLBACK_2", "llama-3.1-8b-instant"),
+    ])))
+    max_tokens:          int   = 2048   # increased: richer grading JSON responses
+    temperature:         float = 0.10   # lower: more deterministic grading
     max_context_chars:   int   = 3000
     max_answer_chars:    int   = 2000
-    max_api_retries:     int   = 4
-    rate_limit_sleep:    int   = 20
+    max_api_retries:     int   = 3
+    rate_limit_sleep:    int   = 15
     noise_ratio_thresh:  float = 0.40
     repetition_thresh:   float = 0.30
     min_answer_words:    int   = 4
